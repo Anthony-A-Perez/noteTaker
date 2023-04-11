@@ -12,11 +12,10 @@ let notesData = [];
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '/public')));
-
+//Get Route
 app.get('/api/notes', function (err, res) {
     try {
-        notesData = fs.readFileSync('./db/db.json', 'utf8');
-        console.log('hello');
+        notesData = fs.readFileSync('./db/db.json', 'utf8'); 
         notesData = JSON.parse(notesData);
 
     } catch (err) {
@@ -25,22 +24,16 @@ app.get('/api/notes', function (err, res) {
     }
     res.json(notesData);
 });
-
+//Post Route, Post, Write post to db.json then render
 app.post('/api/notes', function (req, res) {
     try {
 
-
         notesData = fs.readFileSync('./db/db.json', 'utf8');
-        console.log(notesData);
-
         notesData = JSON.parse(notesData);
-
         req.body.id = notesData.length;
-
         notesData.push(req.body);
-
         notesData = JSON.stringify(notesData);
-        
+
         fs.writeFile('./db/db.json', notesData, 'utf8', function (err) {
             if (err) throw err;
 
@@ -50,10 +43,10 @@ app.post('/api/notes', function (req, res) {
 
     } catch (err) {
         throw err;
-        console.error(err);
+   
     }
 });
-
+//Delete note
 app.delete('/api/notes/:id', function (req, res) {
     try {
         notesData = fs.readFileSync('./db/db.json', 'utf8');
@@ -72,7 +65,7 @@ app.delete('/api/notes/:id', function (req, res) {
         res.send(JSON.parse(notesData));
     } catch (err) {
         throw err;
-        console.log(err);
+      
     }
 });
 
