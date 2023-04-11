@@ -11,9 +11,9 @@ let notesData = [];
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, './public')));
+app.use(express.static(path.join(__dirname, '/public')));
 
-app.get('./public/notes', function(err, res) {
+app.get('/api/notes', function(err, res) {
     try {
         notesData = fs.readFileSync('./db/db.json', 'utf8');
         console.log('hello');
@@ -26,7 +26,7 @@ app.get('./public/notes', function(err, res) {
     res.json(notesData);
 });
 
-app.post('./public/notes', function(req, res) {
+app.post('/api/notes', function(req, res) {
     try {
         notesData = fs.readFileSync('./db/db.json', 'utf8');
         console.log(notesData);
@@ -49,4 +49,43 @@ app.post('./public/notes', function(req, res) {
         throw err;
         console.error(err);
     }
+});
+
+app.delete('/api/notes/:id', function(req, res) {
+    try {
+        notesData = fs.readFileSync('./db/db.json', 'utf8');
+
+        notesData = JSON.parse(notesData);
+
+        notesData = notesData.filter(function(note) {
+            return note.id != req.params.id;
+        });
+        notesData = JSON.stringify(notesData);
+
+        fs.writeFile('./db/db.json', notesData, 'utf8', function(err) {
+            if (err) throw err;
+        });
+
+        res.send(JSON.parse(notesData));
+    } catch (err) {
+        throw err;
+        console.log(err);
+    }
+});
+
+app.get('/notes', function(req, res) {
+    res.sendFile(path.join(__dirname, '/public/notes.html'));
+
+});
+
+app.get('*', function(req, res) {
+    res.sendFile(path.join(__dirname, 'public/index.html'));
+});
+
+app.get('./notes', function(req, res) {
+    return res.sendFile(path.join(__dirname, './db.db.json'));
+});
+
+app.listen(PORT, function() {
+    console.log('server is listening ' + PORT);
 });
